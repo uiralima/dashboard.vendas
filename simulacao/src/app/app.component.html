@@ -1,0 +1,68 @@
+<div class="container">
+	<div class="row">
+		<div class="col col-lg-6">
+			<div class="card">
+				<div class="card-title">Produtos</div>
+				<div class="card-body">
+					<form [formGroup]="productForm" (ngSubmit)="addProduct()">
+						<div class="form-group">
+							<label for="productNameInput">Nome</label>
+							<input formControlName="productName" type="text" class="form-control" id="productNameInput">
+						</div>
+						<div class="form-group">
+							<label for="productPriceInput">Preço</label>
+							<input formControlName="productPrice" type="number" class="form-control"
+								id="productPriceInput">
+						</div>
+						<button [disabled]="this.productForm.invalid" type="submit"
+							class="btn btn-primary">Cadastrar</button>
+					</form>
+				</div>
+			</div>
+		</div>
+		<div class="col col-lg-6">
+			<div class="card">
+				<div class="card-title">Venda</div>
+				<div class="card-body">
+
+					<div class="form-group">
+						<label for="productPriceInput">Produto</label>
+						<select [(ngModel)]="selectedProduct" class="form-control">
+							<option>Escolha</option>
+							<option *ngFor="let product of products" [ngValue]="product">{{product.fullname}}</option>
+						</select>
+					</div>
+					<div class="form-group">
+						<label for="productAmountInput">Quantidade</label>
+						<input [(ngModel)]="this.selectedProduct.amount" type="number" class="form-control"
+							id="productAmountInput">
+					</div>
+					<button [disabled]="selectedProduct.id.length <= 0" type="button" (click)="addProductInSale()" class="btn btn-primary">Lançar</button>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="row">
+		<div class="col">
+			<div class="card">
+				<div class="card-title">Resumo da venda</div>
+				<div class="card-body">
+					<ol>
+						<li *ngFor="let product of sale.products">{{product.fullname}} x {{product.amount}}</li>
+					</ol>
+					<div class="row">
+						<div class="col">
+							<b>Proço final: {{sale.finalPrice | currency}}</b>
+						</div>
+						<div class="col-auto offset">
+							<button [disabled]="sale.products.length === 0" type="button" (click)="saveSale()" class="btn btn-primary">Simular</button>
+						</div>
+					</div>
+					
+					
+				</div>
+			</div>
+		</div>
+	</div>
+
+</div>
