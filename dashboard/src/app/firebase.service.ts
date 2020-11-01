@@ -3,12 +3,13 @@ import { Injectable } from '@angular/core';
 import * as firebase from 'firebase';
 import { AngularFirestore, AngularFirestoreCollection } from '@angular/fire/firestore';
 import { Observable } from 'rxjs';
-import { Sale } from '../../../common/models/sale.models';
+import { map } from 'rxjs/operators';
+import { DailySale, Sale } from '../../../common/models/sale.models';
 
 @Injectable()
 export class FirebaseService {
 
-    private salesCollection: AngularFirestoreCollection<Sale>;
+    private salesCollection: AngularFirestoreCollection<DailySale>;
 
     constructor(protected myFirestone: AngularFirestore) {
         this.salesCollection = this.myFirestone.collection("sales");
@@ -21,5 +22,21 @@ export class FirebaseService {
                 (date.getMonth() + 1) : "0" + (date.getMonth() + 1)).toString() +
                 ((date.getDate() >= 10) ? date.getDate() : "0" + (date.getDate())).toString();
         return this.salesCollection.doc<Sale[]>(key).valueChanges();
+    }
+
+    public getOldDocuments(): Observable<DailySale[]> {
+        return this.salesCollection.get().pipe(
+            map(docs => {
+                
+                let result: DailySale[] = [];
+                docs.docs.map((doc) => {
+                    let sale = new DailySale();
+                    sale.date = doc.id;
+                    sale.sales = <Sale[]>doc.data().sales;
+                    result.push(sale);
+                });
+                return result;
+            })
+        );
     }
 }

@@ -12,3 +12,8 @@ export class Sale {
     public products: Product[] = [];
     public saleDate: Date;
 } 
+
+export class DailySale {
+    public date: string;
+    public sales: Sale[];
+}
