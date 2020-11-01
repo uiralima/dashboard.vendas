@@ -4,6 +4,7 @@ import { firebaseConfigInfo } from '../../../common/config/firebase.config';
 
 import { AppComponent } from './app.component';
 import { AngularFireModule } from '@angular/fire';
+import { FirebaseService } from './firebase.service';
 
 @NgModule({
   declarations: [
@@ -13,7 +14,8 @@ import { AngularFireModule } from '@angular/fire';
     BrowserModule,
     AngularFireModule.initializeApp(firebaseConfigInfo)
   ],
-  providers: [],
+  providers: [
+    FirebaseService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

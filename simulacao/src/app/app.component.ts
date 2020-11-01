@@ -34,7 +34,6 @@ export class AppComponent implements OnInit {
 		if (this.productForm.valid) {
 			this.firestoreService.addProduct(this.productForm.value.productName, this.productForm.value.productPrice)
 				.subscribe(() => {
-					alert("Produto inserido!");
 				})
 		}
 	}
@@ -44,14 +43,21 @@ export class AppComponent implements OnInit {
 			this.selectedProduct.amount = 1;
 		}
 		this.sale.products.push(this.selectedProduct);
-		this.sale.finalPrice += this.selectedProduct.price * this.selectedProduct.amount;
+		this.calculateSalePrice();
+		
 		this.selectedProduct = new Product();
 	}
 
+	public calculateSalePrice(): void {
+		this.sale.finalPrice = this.sale.deliveryTax;
+		for(let i=0; i<this.sale.products.length; i++) {
+			this.sale.finalPrice += this.sale.products[i].price * this.sale.products[i].amount;
+		}
+	}
+
 	public saveSale(): void {
-		this.sale.finalPrice += this.sale.deliveryTax;
+		this.calculateSalePrice();
 		this.firestoreService.saveSale(this.sale).subscribe(() => {
-			alert("Venda salva!");
 			this.sale = new Sale();
 		});
 	}

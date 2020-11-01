@@ -1,8 +1,8 @@
 <div class="container">
 	<div class="row">
-		<div class="col col-lg-6">
-			<div class="card">
-				<div class="card-title">Produtos</div>
+		<div class="col-sm-12 col-md-6">
+			<div class="card mt-2 text-white bg-primary">
+				<div class="card-header">Produtos</div>
 				<div class="card-body">
 					<form [formGroup]="productForm" (ngSubmit)="addProduct()">
 						<div class="form-group">
@@ -15,21 +15,20 @@
 								id="productPriceInput">
 						</div>
 						<button [disabled]="this.productForm.invalid" type="submit"
-							class="btn btn-primary">Cadastrar</button>
+							class="btn btn-warning">Cadastrar</button>
 					</form>
 				</div>
 			</div>
 		</div>
-		<div class="col col-lg-6">
-			<div class="card">
-				<div class="card-title">Venda</div>
+		<div class="col-sm-12 col-md-6">
+			<div class="card mt-2 text-white bg-info">
+				<div class="card-header">Venda</div>
 				<div class="card-body">
 
 					<div class="form-group">
 						<label for="productPriceInput">Produto</label>
 						<select [(ngModel)]="selectedProduct" class="form-control">
-							<option>Escolha</option>
-							<option *ngFor="let product of products" [ngValue]="product">{{product.fullname}}</option>
+							<option *ngFor="let product of products" [ngValue]="product">{{product.fullname}} - {{product.price | currency}}</option>
 						</select>
 					</div>
 					<div class="form-group">
@@ -37,19 +36,28 @@
 						<input [(ngModel)]="this.selectedProduct.amount" type="number" class="form-control"
 							id="productAmountInput">
 					</div>
-					<button [disabled]="selectedProduct.id.length <= 0" type="button" (click)="addProductInSale()" class="btn btn-primary">Lançar</button>
+					<button [disabled]="selectedProduct.id.length <= 0" type="button" (click)="addProductInSale()" class="btn btn-warning">Lançar</button>
 				</div>
 			</div>
 		</div>
 	</div>
 	<div class="row">
 		<div class="col">
-			<div class="card">
-				<div class="card-title">Resumo da venda</div>
+			<div class="card mt-2 mt-2 text-white bg-dark">
+				<div class="card-header">Resumo da venda</div>
 				<div class="card-body">
 					<ol>
 						<li *ngFor="let product of sale.products">{{product.fullname}} x {{product.amount}}</li>
 					</ol>
+					<div class="row">
+						<div class="col-auto">
+							<div class="form-group">
+								<label for="deliveryTaxInput">Tx de Entrega</label>
+								<input [(ngModel)]="this.sale.deliveryTax" (ngModelChange)="calculateSalePrice()" type="number" class="form-control"
+									id="deliveryTaxInput">
+							</div>
+						</div>
+					</div>
 					<div class="row">
 						<div class="col">
 							<b>Proço final: {{sale.finalPrice | currency}}</b>
