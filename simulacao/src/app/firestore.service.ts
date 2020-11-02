@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
 import { AngularFirestore, AngularFirestoreCollection } from '@angular/fire/firestore';
 import * as firebase from 'firebase';
-import { Product } from '../../../common/models/products.models';
 import { from, Observable } from 'rxjs';
+import { Product } from '../../../common/models/products.models';
 import { Sale } from '../../../common/models/sale.models';
 
 @Injectable()
@@ -14,8 +14,6 @@ export class FirestoreService {
         this.salesCollection = this.firestore.collection("sales");
     }
 
-    
-
     public addProduct(name: string, price: number): Observable<void> {
         let product: Product = new Product();
         product.id = this.firestore.createId();
@@ -23,12 +21,6 @@ export class FirestoreService {
         product.price = price;
         return from (this.productsCollection.doc(product.id).set({...product}));
     }
-
-    /*public saveSale(sale: Sale): Observable<void> {
-        sale.id = this.firestore.createId();
-        sale.saleDate = new Date();
-        return from(this.salesCollection.doc(sale.id).set({...sale}))
-    }*/
 
     public saveSale(sale: Sale): Observable<void> {
         sale.id = this.firestore.createId();

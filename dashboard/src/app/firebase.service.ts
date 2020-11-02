@@ -1,10 +1,9 @@
 import { Injectable } from '@angular/core';
-
-import * as firebase from 'firebase';
 import { AngularFirestore, AngularFirestoreCollection } from '@angular/fire/firestore';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { DailySale, Sale } from '../../../common/models/sale.models';
+
 
 @Injectable()
 export class FirebaseService {
@@ -27,9 +26,8 @@ export class FirebaseService {
     public getOldDocuments(): Observable<DailySale[]> {
         return this.salesCollection.get().pipe(
             map(docs => {
-                
                 let result: DailySale[] = [];
-                docs.docs.map((doc) => {
+                docs.docs.forEach((doc) => {
                     let sale = new DailySale();
                     sale.date = doc.id;
                     sale.sales = <Sale[]>doc.data().sales;

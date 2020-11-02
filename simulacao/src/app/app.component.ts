@@ -50,9 +50,9 @@ export class AppComponent implements OnInit {
 
 	public calculateSalePrice(): void {
 		this.sale.finalPrice = this.sale.deliveryTax;
-		for(let i=0; i<this.sale.products.length; i++) {
-			this.sale.finalPrice += this.sale.products[i].price * this.sale.products[i].amount;
-		}
+		this.sale.products.forEach((item) => {
+			this.sale.finalPrice += item.price * item.amount;
+		})
 	}
 
 	public saveSale(): void {

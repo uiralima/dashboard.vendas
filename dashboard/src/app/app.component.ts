@@ -55,36 +55,27 @@ export class AppComponent implements OnInit {
 	}
 
 	private putProductInProductCard(product: Product) {
-		let isInProductCard: boolean = false;
-		for (let i = 0; i < this.productCard.infos.length; i++) {
-			if (this.productCard.infos[i].id === product.id) {
-				this.productCard.infos[i].amount += product.amount;
-				this.productCard.infos[i].totalValue += product.price * product.amount;
-				isInProductCard = true;
-				break;
-			}
+		let item = this.productCard.infos.find((my) => my.id === product.id);
+		if (item) {
+			item.amount += product.amount;
+			item.totalValue += product.price * product.amount;
 		}
-		if (!isInProductCard) {
+		else {
 			this.productCard.infos.push(new ProducstsCardInfo(product.id, product.fullname, product.amount, product.price * product.amount))
 		}
 	}
 
 	public ngOnInit(): void {
-		
 		let today = new Date();
 		let todayKey = today.getFullYear().toString() +
-			(((today.getMonth() + 1) >= 10) ?
-				(today.getMonth() + 1) : "0" + (today.getMonth() + 1)).toString() +
+			(((today.getMonth() + 1) >= 10) ? (today.getMonth() + 1) : "0" + (today.getMonth() + 1)).toString() +
 			((today.getDate() >= 10) ? today.getDate() : "0" + (today.getDate())).toString();
 		this.firestoneService.getOldDocuments().subscribe((data: DailySale[]) => {
-			data.map((info: DailySale) => {
+			data.forEach((info: DailySale) => {
 				let dayInfo = new OldSaleCardInfo();
 				if (info.date != todayKey) {
 					dayInfo.day = info.date;
-					let totalValue = 0;
-					for (let i = 0; i < info.sales.length; i++) {
-						totalValue += info.sales[i].finalPrice;
-					};
+					let totalValue = info.sales.reduce((value, item) => item.finalPrice, 0)
 					dayInfo.total = info.sales.length;
 					dayInfo.totalValue = totalValue;
 					this.dailySale.infos.push(dayInfo);
@@ -101,7 +92,7 @@ export class AppComponent implements OnInit {
 					todayInfo.totalValue = 0;
 					let sales = data.sales;
 					this.productCard = new ProductCard();
-					sales.map((sale: Sale) => {
+					sales.forEach((sale: Sale) => {
 						todayInfo.totalValue += sale.finalPrice;
 						// Acerta a data da venda
 						sale.saleDate = (<any>sale.saleDate).toDate()//aux;
@@ -114,14 +105,14 @@ export class AppComponent implements OnInit {
 					let result = sales.sort((a, b) => (+b.saleDate) - (+a.saleDate));
 					this.lastSalesCard = new LastSalesCard();
 					this.lastSalesCard.lastSales = result.slice(0, 3);
-
 					return result;
 				}
 				else {
 					return this.sales;
 				}
-			})).subscribe((sales: Sale[]) => {
-				this.sales = sales;
 			})
+		).subscribe((sales: Sale[]) => {
+			this.sales = sales;
+		});
 	}
 }
