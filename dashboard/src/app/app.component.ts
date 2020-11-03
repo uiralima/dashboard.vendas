@@ -22,6 +22,7 @@ class ProducstsCardInfo {
 
 class OldSaleCardInfo {
 	public day: string;
+	public unformatedDay: string;
 	public total: number;
 	public totalValue: number;
 }
@@ -74,16 +75,19 @@ export class AppComponent implements OnInit {
 			data.forEach((info: DailySale) => {
 				let dayInfo = new OldSaleCardInfo();
 				if (info.date != todayKey) {
-					dayInfo.day = info.date;
+					dayInfo.day = `${info.date.substr(6,2)}/${info.date.substr(4,2)}/${info.date.substr(0,4)}`;
+					dayInfo.unformatedDay = info.date;
 					let totalValue = info.sales.reduce((value, item) => item.finalPrice, 0)
 					dayInfo.total = info.sales.length;
 					dayInfo.totalValue = totalValue;
 					this.dailySale.infos.push(dayInfo);
 				}
 			})
+			this.dailySale.infos = this.dailySale.infos.sort((a, b) => (+b.unformatedDay) - (+a.unformatedDay));
 		});
 		let todayInfo: OldSaleCardInfo = new OldSaleCardInfo();
-		todayInfo.day = todayKey;
+		todayInfo.day = `${todayKey.substr(6,2)}/${todayKey.substr(4,2)}/${todayKey.substr(0,4)}`;
+		todayInfo.unformatedDay = todayKey;
 		this.dailySale.infos.push(todayInfo);
 		this.firestoneService.ObserveSales().pipe(
 			map((data: any) => {
@@ -95,7 +99,7 @@ export class AppComponent implements OnInit {
 					sales.forEach((sale: Sale) => {
 						todayInfo.totalValue += sale.finalPrice;
 						// Acerta a data da venda
-						sale.saleDate = (<any>sale.saleDate).toDate()//aux;
+						sale.saleDate = (<any>sale.saleDate).toDate();
 						// Organiza os dados do cartão de produtos
 						sale.products.map((product: Product) => {
 							this.putProductInProductCard(product);
@@ -103,6 +107,7 @@ export class AppComponent implements OnInit {
 					})
 					this.productCard.infos = this.productCard.infos.sort((a, b) => b.amount - a.amount)
 					let result = sales.sort((a, b) => (+b.saleDate) - (+a.saleDate));
+					this.dailySale.infos = this.dailySale.infos.sort((a, b) => (+b.unformatedDay) - (+a.unformatedDay));
 					this.lastSalesCard = new LastSalesCard();
 					this.lastSalesCard.lastSales = result.slice(0, 3);
 					return result;
