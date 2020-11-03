@@ -5,6 +5,9 @@ import { FirebaseService } from './firebase.service';
 import { map } from 'rxjs/operators';
 import { Product } from '../../../common/models/products.models';
 
+declare var feather: any;
+declare var Chart: any;
+
 class LastSalesCard {
 	public header: string = "Ultimas vendas hoje";
 	public lastSales: Sale[] = [];
@@ -75,18 +78,20 @@ export class AppComponent implements OnInit {
 			data.forEach((info: DailySale) => {
 				let dayInfo = new OldSaleCardInfo();
 				if (info.date != todayKey) {
-					dayInfo.day = `${info.date.substr(6,2)}/${info.date.substr(4,2)}/${info.date.substr(0,4)}`;
+					dayInfo.day = `${info.date.substr(6, 2)}/${info.date.substr(4, 2)}/${info.date.substr(0, 4)}`;
 					dayInfo.unformatedDay = info.date;
-					let totalValue = info.sales.reduce((value, item) => item.finalPrice, 0)
+					let value = 0;
+					let totalValue = info.sales.reduce((value, item) => value + item.finalPrice, 0)
 					dayInfo.total = info.sales.length;
 					dayInfo.totalValue = totalValue;
 					this.dailySale.infos.push(dayInfo);
 				}
 			})
 			this.dailySale.infos = this.dailySale.infos.sort((a, b) => (+b.unformatedDay) - (+a.unformatedDay));
+			this.putChart();
 		});
 		let todayInfo: OldSaleCardInfo = new OldSaleCardInfo();
-		todayInfo.day = `${todayKey.substr(6,2)}/${todayKey.substr(4,2)}/${todayKey.substr(0,4)}`;
+		todayInfo.day = `${todayKey.substr(6, 2)}/${todayKey.substr(4, 2)}/${todayKey.substr(0, 4)}`;
 		todayInfo.unformatedDay = todayKey;
 		this.dailySale.infos.push(todayInfo);
 		this.firestoneService.ObserveSales().pipe(
@@ -108,6 +113,7 @@ export class AppComponent implements OnInit {
 					this.productCard.infos = this.productCard.infos.sort((a, b) => b.amount - a.amount)
 					let result = sales.sort((a, b) => (+b.saleDate) - (+a.saleDate));
 					this.dailySale.infos = this.dailySale.infos.sort((a, b) => (+b.unformatedDay) - (+a.unformatedDay));
+					this.putChart();
 					this.lastSalesCard = new LastSalesCard();
 					this.lastSalesCard.lastSales = result.slice(0, 3);
 					return result;
@@ -119,5 +125,40 @@ export class AppComponent implements OnInit {
 		).subscribe((sales: Sale[]) => {
 			this.sales = sales;
 		});
+		
+	}
+
+	public putChart(): void {
+		feather.replace()
+
+		// Graphs
+		var ctx = document.getElementById('myChart')
+		// eslint-disable-next-line no-unused-vars
+		var myChart = new Chart(ctx, {
+			type: 'line',
+			data: {
+				labels: this.dailySale.infos.map((info) => info.day).slice(0, 7),
+				datasets: [{
+					data: this.dailySale.infos.map((info) => info.totalValue).slice(0, 7),
+					lineTension: 0,
+					backgroundColor: 'transparent',
+					borderColor: '#007bff',
+					borderWidth: 4,
+					pointBackgroundColor: '#007bff'
+				}]
+			},
+			options: {
+				scales: {
+					yAxes: [{
+						ticks: {
+							beginAtZero: true
+						}
+					}]
+				},
+				legend: {
+					display: false
+				}
+			}
+		})
 	}
 }
